@@ -1,40 +1,37 @@
 import { Router } from "express";
 import authorize from "../middlewares/auth.middleware.js";
-import { createSubscription, getAllSubscriptions, getUserSubscriptions } from "../Controller/subscription.controller.js";
+import {
+  cancelSubscription,
+  createSubscription,
+  deleteAllSubscriptions,
+  deleteSubscription,
+  getAllSubscriptions,
+  getSubscription,
+  getUpcomingRenewals,
+  getUserSubscriptions,
+  updateSubscription,
+} from "../Controller/subscription.controller.js";
+import { deleteModel } from "mongoose";
 
 const subscriptionRouter = Router();
 
 subscriptionRouter.get("/", authorize, getAllSubscriptions);
 
-
-subscriptionRouter.get("/:id", (req, res) => {
-  const { id } = req.params;
-  res.send(`Get Subscription with ID: ${id}`);
-});
-
+subscriptionRouter.get("/:id", authorize, getSubscription);
 
 subscriptionRouter.post("/", authorize, createSubscription);
 
-
-subscriptionRouter.put("/:id", (req, res) => {
-  const { id } = req.params;
-  const updatedSubscription = req.body;
-  res.send(`Update Subscription with ID: ${id} to ${JSON.stringify(updatedSubscription)}`);
-});
-subscriptionRouter.delete("/:id", (req, res) => {
-  const { id } = req.params;
-  res.send(`Delete Subscription with ID: ${id}`);
-});
-
+// it finds the subscription buy using the user id
 subscriptionRouter.get("/user/:id", authorize, getUserSubscriptions);
-subscriptionRouter.put("/:id/cancel", (req, res) => {
-  const { id } = req.params;
-  res.send(`Cancel Subscription with ID: ${id}`);
-});
-subscriptionRouter.get("/upcomingrenewals", (req, res) => {
-  res.send("Get all upcoming renewals");
-});
 
+subscriptionRouter.put("/:id", authorize, updateSubscription);
 
+subscriptionRouter.delete("/:id", authorize, deleteSubscription);
+
+subscriptionRouter.delete("/", authorize, deleteAllSubscriptions);
+
+subscriptionRouter.put("/:id/cancel", authorize, cancelSubscription);
+
+subscriptionRouter.get("/upcomingrenewals", authorize, getUpcomingRenewals);
 
 export default subscriptionRouter;
